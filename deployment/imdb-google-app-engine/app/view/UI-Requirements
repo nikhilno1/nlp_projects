@@ -9,3 +9,8 @@ Requirements:
 7) For positive it will move towards the right and color of the gauge should be green.
 8) For negative it will move towards the left and color of the gauge should be red.
 9) In between the color can change in this manner: red--orange--yellow--green.
+
+Some details:
+1) The front-end HTML code to take user input is present in index.html file in this folder.
+2) The backend return code is currently present in server.py file inside the 'app' folder (https://github.com/nikhilno1/nlp_projects/blob/master/deployment/imdb-google-app-engine/app/server.py)
+3) Currently it returns simple HTML page with some text. That needs to be replaced with the gauge.
