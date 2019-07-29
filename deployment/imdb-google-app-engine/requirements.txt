@@ -1,0 +1,8 @@
+pytorch-transformers
+starlette
+uvicorn
+python-multipart
+aiofiles
+aiohttp
+scipy
+sklearn
