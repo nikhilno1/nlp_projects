@@ -5,9 +5,9 @@ Requirements:
 3) The gauge should be displayed on the right side of the page. https://www.jqueryscript.net/demo/Minimal-Gauge-Plugin-With-jQuery-CSS3-cmGauge/
 4) It will have 3 labels, left side will be called 'Negative'. Right side 'Positive' and center is "Neutral". By default when the page loads it can be neutral.
 5) Once user enters some text and clicks on 'Analyze' then the button should show "Loading" until the backend runs and returns the result. Refer https://stackoverflow.com/questions/54522830/bootstrap-4-loading-spinner-in-button for how it should look.
-6) Once the backend returns with 2 values, text is positive or negative along with a confidence value, set the gauge to the appropriate value.
-7) For positive it will move towards the right and color of the gauge should be green.
-8) For negative it will move towards the left and color of the gauge should be red.
+6) The backend returns 2 values, a number 0 or 1 that indicates whether the sentiment is positive or negative (0: negative, 1: positive). And a confidence value that indicates how confident it is.
+7) For positive sentiment it should move towards the right and color of the gauge should be green.
+8) For negative sentiment it should move towards the left and color of the gauge should be red.
 9) In between the color can change in this manner: red--orange--yellow--green.
 
 Some details:
