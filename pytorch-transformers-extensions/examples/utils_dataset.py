@@ -127,7 +127,7 @@ class ImdbProcessor(DataProcessor):
                         label = task_labels[label_dir]
                         """logger.info("guid: %s, file: <%s>, text_a= <%s>, label=%s" % (guid, input_file, text_a, label))"""
                         examples.append(
-                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))                    
+                            InputExample(guid=guid, text_a=text_a, text_b=text_b, label=label))
         return examples
 
 
@@ -227,7 +227,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
         else:
             raise KeyError(output_mode)
 
-        if ex_index < 5:
+        if ex_index < 0:
             logger.info("*** Example ***")
             logger.info("guid: %s" % (example.guid))
             logger.info("tokens: %s" % " ".join(
@@ -291,20 +291,20 @@ def compute_metrics(task_name, preds, labels):
     if task_name == "imdb":
         return acc_and_f1(preds, labels)
     elif task_name == "quora":
-        return acc_and_f1(preds, labels)    
+        return acc_and_f1(preds, labels)
     else:
         raise KeyError(task_name)
 
 processors = {
-    "imdb": ImdbProcessor,    
+    "imdb": ImdbProcessor,
 }
 
 output_modes = {
     "imdb": "classification",
-    "quora": "classification",    
+    "quora": "classification",
 }
 
 task_labels = {
     "neg": "0",
-    "pos": "1",    
+    "pos": "1",
 }
