@@ -30,6 +30,11 @@ body {
     margin-top: 5em;
 }
 
+.gauge {
+    margin-top: 0.5em;
+}
+
+
 .upload-label {
     padding: 10px;
     font-size: 12px;

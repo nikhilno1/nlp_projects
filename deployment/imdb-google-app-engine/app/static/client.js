@@ -34,4 +34,6 @@ function analyze() {
     xhr.send(fileData);
 }
 
-
+function myFunc() {
+    return data
+}

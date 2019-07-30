@@ -154,9 +154,6 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
 
     features = []
     for (ex_index, example) in enumerate(examples):
-        if ex_index % 10000 == 0:
-            logger.info("Writing example %d of %d" % (ex_index, len(examples)))
-
         tokens_a = tokenizer.tokenize(example.text_a)
 
         tokens_b = None
@@ -338,8 +335,7 @@ def do_inference(args, model, tokenizer):
     
         pred_arr = logits.detach().cpu().numpy()
         out_label_ids = inputs['labels'].detach().cpu().numpy()
-
-    logger.info("pred_arr: %s", pred_arr)
+    
     pred_prob = np.squeeze(softmax(pred_arr, axis=1))
     logger.info("[0]: %s, [1]: %s", pred_prob[0], pred_prob[1])
 
@@ -362,8 +358,7 @@ def do_inference(args, model, tokenizer):
 def load_example(args, task, tokenizer):
     processor = processors[task]()
     output_mode = output_modes[task]
-    
-    logger.info("Creating features from input")
+        
     label_list = processor.get_labels()
     examples = [InputExample(guid=0, text_a=args.text, text_b=None, label='1')]
     features = convert_examples_to_features(examples, label_list, args.max_seq_length, tokenizer, output_mode,

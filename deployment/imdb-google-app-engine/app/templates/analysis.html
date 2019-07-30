@@ -1,0 +1,73 @@
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <link rel='stylesheet' href='../static/style.css'>
+        <script src='../static/client.js'></script>
+        <link rel="stylesheet" href="../static/cmGauge.css">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="../static/cmGauge.js"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../static/component-spinners.css" rel="stylesheet">
+    </head>
+    <body>
+        <div>
+            <div class='center'>
+                <div class='title'>Sentiment Analysis of Movie Reviews</div>
+                <div class='content'>
+                    <form action="/analyze" class="form" method="post">
+                        <div class="form-group">                            
+                            <textarea id = "review_area" rows = "10" cols = "100" name = "review_text">{{ review_text }}</textarea><br>
+                        </div> 
+                        <div class='analyze'>                            
+                            <button type="submit" class="btn btn-primary btn-spinner btn-spinner-example" value="Analyze" data-spinner-text="Analyzing...">Analyze</button>
+                        </div>                        
+                    </form> 
+                    <b>Negative</b>
+                    <div id="gaugeDemo" class="gauge gauge-big gauge-green">                        
+                        <div class="gauge-arrow" data-percentage="50"
+                            style="transform: rotate(0deg);"></div>
+                    </div>
+                    <b>Positive</b>
+                    <div class='result'>
+                        <br><p id="result"></p>
+                    </div>
+                    <script type="text/javascript">
+                        var indicator = 50                        
+                        var pred = '{{ prediction }}';
+                        $('#gaugeDemo .gauge-arrow').cmGauge();
+                        if (pred == "Negative") {
+                            indicator = 100 - {{ confidence }};
+                        } else {
+                            indicator = {{ confidence }};
+                        }                        
+                        $('#gaugeDemo .gauge-arrow').trigger('updateGauge', indicator);
+                        $('.btn-spinner-example').click(function() {
+                            var btn = $(this);
+                            $(btn).buttonLoader('start');
+                        }); 
+                        //document.getElementById("review_area").value = {{ review_text }};                        
+                        if (pred != "") {
+                            document.getElementById("result").innerHTML = "{{ prediction }} with confidence of {{ confidence }} %";
+                            $(btn).buttonLoader('stop');
+                        }
+                        // Enable button if some text entered
+                        $(document).ready(function(){
+                            $('.btn').attr('disabled',true);                            
+                            $('#review_area').keyup(function(){
+                                if($(this).val().length !=0){
+                                    $('.btn').attr('disabled', false);
+                                }
+                                else
+                                {
+                                    $('.btn').attr('disabled', true);        
+                                }
+                            })
+                        });
+                    </script>                                      
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+        <script src="../static/component-spinners.js"></script>
+    </body>
+</html>

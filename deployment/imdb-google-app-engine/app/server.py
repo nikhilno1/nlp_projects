@@ -1,9 +1,5 @@
-from starlette.applications import Starlette
-from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
-from starlette.staticfiles import StaticFiles
-from starlette.middleware.cors import CORSMiddleware
-import uvicorn, aiohttp, asyncio
-from io import BytesIO
+from waitress import serve
+from flask import Flask,render_template, url_for, request
 import logging
 import sys
 import os
@@ -52,18 +48,9 @@ path = Path(__file__).parent
 
 logger = logging.getLogger(__name__)
 
-app = Starlette()
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
-app.mount('/static', StaticFiles(directory='app/static'))
+app = Flask(__name__)
 
-'''async def download_file(url, dest):
-    if dest.exists(): return
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            data = await response.read()
-            with open(dest, 'wb') as f: f.write(data)'''
-
-async def load_model():
+def load_model():
     global tokenizer, model
     # Setup logging
     logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -86,35 +73,27 @@ async def load_model():
     model = model_class.from_pretrained(args.model_name_or_path, config=config)   
     return model
         
-
-loop = asyncio.get_event_loop()
-tasks = [asyncio.ensure_future(load_model())]
-learn = loop.run_until_complete(asyncio.gather(*tasks))[0]
-loop.close()
+load_model()
 
 @app.route('/')
-def index(request):
-    html = path/'view'/'index.html'
-    return HTMLResponse(html.open().read())
+def index():    
+    return render_template('analysis.html', prediction="", confidence=50, review_text="")
 
 @app.route('/analyze', methods=['POST'])
-async def analyze(request):
-    data = await request.form()
-    print("inside analyze......")
-    logger.info("Data: %s", data)
-    args.text = data['review_text']
+def analyze():
+    args.text = request.form['review_text']
+    args.text = args.text.replace('\n', ' ').replace('\r', '')
+    logger.info("Input text = <%s>", args.text)    
     pred, confidence = do_inference(args, model, tokenizer)
+    prediction = "Positive" if pred==1 else "Negative"
+    
+    return render_template('analysis.html', prediction=prediction, confidence=round(confidence), review_text=args.text)
 
-    return HTMLResponse(
-        """
-        <html>
-           <body>
-             <p>Prediction: <b>%d</b></p>
-             <p>Confidence: %d</p>
-           </body>        
-        </html>
-    """ %(pred, confidence))
-
+    
 if __name__ == '__main__':
-    if 'serve' in sys.argv: uvicorn.run(app, host='0.0.0.0', port=8000)
+    serve(app, host='0.0.0.0', port=8000)
+	
+
+    
+
 
