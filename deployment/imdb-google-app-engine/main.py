@@ -1,11 +1,9 @@
 from waitress import serve
-from flask import Flask,render_template, url_for, request
+from flask import Flask, render_template, url_for, request
 import logging
 import sys
 import os
-from pathlib import Path
 
-import numpy as np
 from scipy.special import softmax
 import torch
 from torch.utils.data import (DataLoader, SequentialSampler, TensorDataset)
@@ -32,7 +30,7 @@ MODEL_CLASSES = {
 
 from argparse import Namespace
 args = Namespace(task_name='imdb', model_type='bert', \
-    model_name_or_path='/home/nikhil_subscribed/nlp_projects/pytorch-transformers-extensions/examples/imdb_output_final_bert/', max_seq_length=512, \
+    model_name_or_path='app/model/', max_seq_length=512, \
     do_lower_case = 'true', text="")
 
 model = None
@@ -44,7 +42,6 @@ model_name_or_path = 'https://storage.googleapis.com/deployment-247905.appspot.c
 max_seq_length = 512
 classes = ['0', '1']'''
 
-path = Path(__file__).parent
 
 logger = logging.getLogger(__name__)
 
@@ -75,9 +72,11 @@ def load_model():
         
 load_model()
 
+logger.info("Model loaded.")
+
 @app.route('/')
 def index():    
-    return render_template('analysis.html', prediction="", confidence=50, review_text="")
+    return render_template('index.html', prediction="", confidence=50, review_text="")
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -87,11 +86,10 @@ def analyze():
     pred, confidence = do_inference(args, model, tokenizer)
     prediction = "Positive" if pred==1 else "Negative"
     
-    return render_template('analysis.html', prediction=prediction, confidence=round(confidence), review_text=args.text)
+    return render_template('index.html', prediction=prediction, confidence=round(confidence), review_text=args.text)
 
-    
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=8000)
+    serve(app, host='0.0.0.0', port=8080)
 	
 
     

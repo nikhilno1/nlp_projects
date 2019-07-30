@@ -1,8 +1,5 @@
 pytorch-transformers
-starlette
-uvicorn
-python-multipart
-aiofiles
-aiohttp
+flask
+waitress
 scipy
 sklearn
