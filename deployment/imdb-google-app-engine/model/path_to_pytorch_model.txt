@@ -1,0 +1,2 @@
+Download the model from https://storage.googleapis.com/deployment-247905.appspot.com/models/imdb_output_final_bert/pytorch_model.bin
+Cannot put it in GitHub due to size restrictions
