@@ -34,6 +34,11 @@ function analyze() {
     xhr.send(fileData);
 }
 
-function myFunc() {
-    return data
+function myFunction() {
+    alert("Page is loaded");
 }
+
+function showResult() {
+    
+}
+

@@ -1,8 +1,7 @@
-<html lang='en'>
+<html lang='en'>    
     <head>
         <meta charset='utf-8'>
-        <link rel='stylesheet' href='../static/style.css'>
-        <script src='../static/client.js'></script>
+        <link rel='stylesheet' href='../static/style.css'>        
         <link rel="stylesheet" href="../static/cmGauge.css">
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="../static/cmGauge.js"></script>
@@ -14,46 +13,57 @@
             <div class='center'>
                 <div class='title'>Sentiment Analysis of Movie Reviews</div>
                 <div class='content'>
-                    <form action="/analyze" class="form" method="post">
+                    <form action="/analyze" id="analyzeForm" class="form" method="post">
                         <div class="form-group">                            
-                            <textarea id = "review_area" rows = "10" cols = "100" name = "review_text">{{ review_text }}</textarea><br>
+                            <textarea id = "review_id" rows = "7" cols = "80" name = "review_name" class="review_class"></textarea><br>
                         </div> 
                         <div class='analyze'>                            
-                            <button type="submit" class="btn btn-primary btn-spinner btn-spinner-example" value="Analyze" data-spinner-text="Analyzing...">Analyze</button>
+                            <button id="submit_button" type="submit" class="btn btn-primary btn-spinner btn-spinner-example" value="Analyze" data-spinner-text="Analyzing...">Analyze</button>
                         </div>                        
                     </form> 
                     <b>Negative</b>
                     <div id="gaugeDemo" class="gauge gauge-big gauge-green">                        
-                        <div class="gauge-arrow" data-percentage="50"
+                        <div class="gauge-arrow" data-percentage="40"
                             style="transform: rotate(0deg);"></div>
                     </div>
                     <b>Positive</b>
                     <div class='result'>
                         <br><p id="result"></p>
                     </div>
+                    <div id="result2"></div>
                     <script type="text/javascript">
-                        var indicator = 50                        
-                        var pred = '{{ prediction }}';
-                        $('#gaugeDemo .gauge-arrow').cmGauge();
-                        if (pred == "Negative") {
-                            indicator = 100 - {{ confidence }};
-                        } else {
-                            indicator = {{ confidence }};
-                        }                        
-                        $('#gaugeDemo .gauge-arrow').trigger('updateGauge', indicator);
+                        var globalWordCount = 0
+                        var indicator = 50
+                        var btn
+                        var gauge = $('#gaugeDemo .gauge-arrow')
+                        gauge.cmGauge();
+                        gauge.trigger('updateGauge', indicator);
                         $('.btn-spinner-example').click(function() {
-                            var btn = $(this);
-                            $(btn).buttonLoader('start');
-                        }); 
-                        //document.getElementById("review_area").value = {{ review_text }};                        
-                        if (pred != "") {
-                            document.getElementById("result").innerHTML = "{{ prediction }} with confidence of {{ confidence }} %";
+                            //console.log("Button click start");
+                            btn = $(this);
                             $(btn).buttonLoader('stop');
+                            $(btn).buttonLoader('start');
+                        });                         
+                        function word_count(field, count) {
+                            var number = 0;
+                            var matches = $(field).val().match(/\s/g);                            
+                            if(matches) {
+                                number = matches.length;
+                            }                           
+                            
+                            if (globalWordCount != number) {
+                                globalWordCount = number
+                                if (globalWordCount > 0) {
+                                    $("#submit_button").click();
+                                } else {
+                                    gauge.trigger('updateGauge', 50);
+                                }
+                            }
                         }
                         // Enable button if some text entered
                         $(document).ready(function(){
                             $('.btn').attr('disabled',true);                            
-                            $('#review_area').keyup(function(){
+                            $('#review_id').keyup(function(){
                                 if($(this).val().length !=0){
                                     $('.btn').attr('disabled', false);
                                 }
@@ -61,9 +71,41 @@
                                 {
                                     $('.btn').attr('disabled', true);        
                                 }
-                            })
+                            })                            
                         });
-                    </script>                                      
+
+                        $('.review_class').each(function() {
+                            var input = '#' + this.id;
+                            var count = input + '_count';
+                            $(count).show();
+                            word_count(input, count);
+                            $(this).keyup(function() { word_count(input, count) });
+                        });
+
+                        // Attach a submit handler to the form
+                        $( "#analyzeForm" ).submit(function( event ) {                         
+                          // Stop form from submitting normally
+                          event.preventDefault();                          
+                          // Get some values from elements on the page:
+                          var $form = $( this ),
+                            //term = $form.find( "input[name='review_name']" ).val(),
+                            text = $form.find( "textarea" ).val(),
+                            url = $form.attr( "action" );
+                            //console.log(text, "text");
+                         
+                          // Send the data using post
+                          var posting = $.post( url, { review_name: text } );
+                         
+                          // Put the results in a div
+                          posting.done(function( data ) {
+                            var indicator = ('Negative' === data.prediction) ? 100 - data.confidence : data.confidence;            
+                            gauge.trigger('updateGauge', indicator);                                                        
+                            document.getElementById("result").innerHTML = data.prediction + " with confidence of " + data.confidence + "%";
+                            $(btn).buttonLoader('stop');
+                            //console.log("Button click stop");
+                          });                          
+                        });
+                    </script>                                                             
                 </div>
                 <div class='footer'>
                     <p><br><br><br><br><br><br><a href="https://github.com/nikhilno1/nlp_projects">Code on GitHub</a>
@@ -71,7 +113,7 @@
                 </div>
             </div>
         </div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="../static/component-spinners.js"></script>
     </body>
 </html>

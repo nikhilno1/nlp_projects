@@ -1,4 +1,3 @@
-from waitress import serve
 from flask import Flask, render_template, url_for, request, jsonify
 import logging
 import sys
@@ -30,7 +29,7 @@ MODEL_CLASSES = {
 
 from argparse import Namespace
 args = Namespace(task_name='imdb', model_type='bert', \
-    model_name_or_path='app/model/', max_seq_length=512, \
+    model_name_or_path='model/', max_seq_length=512, \
     do_lower_case = 'true', text="")
 
 model = None
@@ -89,9 +88,10 @@ def analyze():
     resp = jsonify(resp_dic)
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
+    '''return render_template('index.html', prediction=prediction, confidence=round(confidence), review_text=args.text)'''
 
 if __name__ == '__main__':
-    serve(app, host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8000, debug=True)
 	
 
     
