@@ -1,4 +1,4 @@
 *.pth
 *.pkl
 .debug
-
+*.swp
