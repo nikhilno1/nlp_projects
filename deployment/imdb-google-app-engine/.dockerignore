@@ -1,2 +1,4 @@
 *.pth
+*.pkl
+.debug
 

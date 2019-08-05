@@ -1,5 +1,11 @@
 pytorch-transformers
+spacy==2.1.6
+fastai==1.0.55
 flask
 waitress
 scipy
 sklearn
+aiohttp
+asyncio
+sqlalchemy
+pymysql

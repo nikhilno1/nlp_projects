@@ -18,22 +18,24 @@ body {
 .title {
     font-size: 30px;
     margin-top: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 1em;    
     color: #262626;
+    text-decoration: underline;
 }
 
 .content {
+    position: static;  
     margin-top: 5em;
 }
 
 .analyze {
-    margin-top: 5em;
-}
-
-.gauge {
     margin-top: 0.5em;
 }
 
+.gauge {
+    margin-top: 0.25em;
+    left: -2em
+}
 
 .upload-label {
     padding: 10px;
@@ -128,3 +130,116 @@ button:focus {outline:0;}
     background-color: #555;
     color: white;
   }
+
+h2 {    
+    width: 90%;    
+    padding: 5px;
+    margin-left: 60px; /* change this as you like */
+}
+
+
+.box-orange {
+  position: absolute;
+  background: orange;
+  width: 100px;
+  height: 100px;
+}
+
+.container {
+  position: static;  
+  width: 400px;
+  height: 275px;
+  left: 100px;
+  top: 100px;
+}
+
+.heading-pt {
+  position: relative;  
+  font-size: 18px;
+  right: 12em;
+  top: 0.25em;
+}
+.heading-fa {
+  position: relative;  
+  font-size: 18px;
+  left: 12em;
+  bottom: 1em;
+}
+
+#js-rating{
+  width:100px;
+  height:100px;  
+  margin-right:10px;
+  float:left;
+}
+.js-rating-pt{
+  position: relative; 
+  float:center;
+  bottom: 2em;
+  margin-right:33em;
+  
+}
+.js-rating-fa{
+  position: relative; 
+  float:center;
+  bottom: 4em;
+  margin-left:33em;
+}
+.smalltext {
+  position: relative;  
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
+  left: 0em;
+  top: 0.75em;
+}
+.smalltext2 {
+  position: relative;  
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
+  left: 0em;
+  top: 2.5em;
+}
+.summary {
+  position: relative;  
+  text-align: center;
+  top: -4em;
+}
+.footer {
+  position: relative;  
+  text-align: center;
+  top: 5em;
+}
+.counter {
+  position: relative;  
+  top: 7em  
+}
+.gaugelabel1 {
+  position: relative;
+  text-align: Center; 
+  right: 28em;
+  bottom: 1.25em;  
+  font-size: 14px;
+}
+.gaugelabel2 {
+  position: relative;
+  text-align: Center; 
+  right: 6em;
+  bottom: 2.5em;  
+  font-size: 14px;
+}
+.gaugelabel3 {
+  position: relative;
+  text-align: Center; 
+  left: 6.0em;
+  bottom: 3.75em;  
+  font-size: 14px;
+}
+.gaugelabel4 {
+  position: relative;
+  text-align: Center; 
+  left: 27.75em;
+  bottom: 5.25em;  
+  font-size: 14px;
+}

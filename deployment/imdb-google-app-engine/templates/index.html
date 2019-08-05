@@ -1,49 +1,76 @@
 <html lang='en'>    
     <head>
         <meta charset='utf-8'>
-        <link rel='stylesheet' href='../static/style.css'>        
+        <link rel='stylesheet' href='../static/styles.css?v=1.0.0'>        
         <link rel="stylesheet" href="../static/cmGauge.css">
+        <link rel="stylesheet" href="../static/jquery.thumbs.css">
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="../static/cmGauge.js"></script>
+        <script src="../static/jquery.thumbs.js"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css" rel="stylesheet">
         <link href="../static/component-spinners.css" rel="stylesheet">
     </head>
     <body>
         <div>
             <div class='center'>
-                <div class='title'>Sentiment Analysis of Movie Reviews</div>
+                <div class='title'><b>BERT vs ULMFiT</b></div>
+                <h3>Sentiment Analysis <small>(Movie Reviews)</small></h3>
                 <div class='content'>
                     <form action="/analyze" id="analyzeForm" class="form" method="post">
                         <div class="form-group">                            
-                            <textarea id = "review_id" rows = "7" cols = "80" name = "review_name" class="review_class"></textarea><br>
-                        </div> 
-                        <div class='analyze'>                            
-                            <button id="submit_button" type="submit" class="btn btn-primary btn-spinner btn-spinner-example" value="Analyze" data-spinner-text="Analyzing...">Analyze</button>
+                            <textarea id = "review_id" rows = "7" cols = "80" name = "review_text" class="review_class"></textarea><br>                            
+                            <div class="smalltext">Provide space after every word to run real-time analysis</div>
+                            <div class="analyze" >    
+                                <button id="submit_button" type="submit" class="btn btn-primary btn-spinner btn-spinner-example" value="Analyze" data-spinner-text="Analyzing...">Analyze</button>
+                            </div>    
                         </div>                        
-                    </form> 
-                    <b>Negative</b>
-                    <div id="gaugeDemo" class="gauge gauge-big gauge-green">                        
-                        <div class="gauge-arrow" data-percentage="40"
-                            style="transform: rotate(0deg);"></div>
+                    </form><br>
+                    <div class="container">
+                        <div class="heading-pt">BERT<sub><small>base</small></sub> (Pytorch-Transformers)</div>
+                        <div class="heading-fa">ULMFiT (Fast AI)</div>                        
+                        <div id="gaugePyTrans" class="gauge gauge-big gauge-green" style="left:-1em">                        
+                            <div class="gauge-arrow" data-percentage="50"
+                                style="transform: rotate(0deg);"></div>
+                        </div>                                                                        
+                        <div id="gaugeFastAI" class="gauge gauge-big gauge-green" style="left:1em">                        
+                            <div class="gauge-arrow" data-percentage="50"
+                                style="transform: rotate(0deg);"></div>
+                        </div>                        
+                        <div class="gaugelabel1"><b>Negative</b></div>
+                        <div class="gaugelabel2"><b>Positive</b></div>
+                        <div class="gaugelabel3"><b>Negative</b></div>
+                        <div class="gaugelabel4"><b>Positive</b></div>
+
+                        <div class='summary'><p id="summary"></p></div>
+                        
+                        <div class="js-rating-pt" data-like="0" data-dislike="0"></div>
+                        <div class="js-rating-fa" data-like="0" data-dislike="0"></div>
                     </div>
-                    <b>Positive</b>
-                    <div class='result'>
-                        <br><p id="result"></p>
-                    </div>
-                    <div id="result2"></div>
+                    <div class='smalltext2'>Rate the performance of these models on any review by clicking above buttons.</div>
+                    
                     <script type="text/javascript">
                         var globalWordCount = 0
                         var indicator = 50
                         var btn
-                        var gauge = $('#gaugeDemo .gauge-arrow')
-                        gauge.cmGauge();
-                        gauge.trigger('updateGauge', indicator);
+                        var delayedTimer = null
+                        var gaugePT = $('#gaugePyTrans .gauge-arrow')
+                        gaugePT.cmGauge();
+                        gaugePT.trigger('updateGauge', indicator);
+
+                        var gaugeFA = $('#gaugeFastAI .gauge-arrow')
+                        gaugeFA.cmGauge();
+                        gaugeFA.trigger('updateGauge', indicator);
+
                         $('.btn-spinner-example').click(function() {
                             //console.log("Button click start");
                             btn = $(this);
                             $(btn).buttonLoader('stop');
                             $(btn).buttonLoader('start');
-                        });                         
+                        });
+                        function delayedSubmit(field, count) {                            
+                            $("#submit_button").click();
+                            delayedTimer = null
+                        }                       
                         function word_count(field, count) {
                             var number = 0;
                             var matches = $(field).val().match(/\s/g);                            
@@ -54,9 +81,13 @@
                             if (globalWordCount != number) {
                                 globalWordCount = number
                                 if (globalWordCount > 0) {
-                                    $("#submit_button").click();
+                                    if (delayedTimer != null ) {
+                                        clearTimeout(delayedTimer)                                        
+                                    }    
+                                    delayedTimer = setTimeout(delayedSubmit, 1500)                                                                        
                                 } else {
-                                    gauge.trigger('updateGauge', 50);
+                                    gaugePT.trigger('updateGauge', 50);
+                                    gaugeFA.trigger('updateGauge', 50);
                                 }
                             }
                         }
@@ -88,32 +119,64 @@
                           event.preventDefault();                          
                           // Get some values from elements on the page:
                           var $form = $( this ),
-                            //term = $form.find( "input[name='review_name']" ).val(),
+                            //term = $form.find( "input[name='review_text']" ).val(),
                             text = $form.find( "textarea" ).val(),
                             url = $form.attr( "action" );
                             //console.log(text, "text");
                          
                           // Send the data using post
-                          var posting = $.post( url, { review_name: text } );
+                          var posting = $.post( url, { review_text: text } );
                          
                           // Put the results in a div
                           posting.done(function( data ) {
-                            var indicator = ('Negative' === data.prediction) ? 100 - data.confidence : data.confidence;            
-                            gauge.trigger('updateGauge', indicator);                                                        
-                            document.getElementById("result").innerHTML = data.prediction + " with confidence of " + data.confidence + "%";
+                            var indicator = ('Negative' === data.pt.prediction) ? 100 - data.pt.confidence : data.pt.confidence;            
+                            gaugePT.trigger('updateGauge', indicator);                                                        
+                            //document.getElementById("summary").innerHTML = data.pt.prediction + " with confidence of " + data.pt.confidence + "%";
+
+                            var indicator = ('Negative' === data.fa.prediction) ? 100 - data.fa.confidence : data.fa.confidence;            
+                            gaugeFA.trigger('updateGauge', indicator);
+                            document.getElementById("summary").innerHTML = data.pt.prediction + " with confidence of " + data.pt.confidence + " %" + 
+                                                                           "&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" +                                                                           
+                                                                           data.fa.prediction + " with confidence of " + data.fa.confidence + " %";
+
                             $(btn).buttonLoader('stop');
                             //console.log("Button click stop");
                           });                          
                         });
+                        function post_model_feedback(model, up_down) {
+                            var $form = $( "#analyzeForm" ) 
+                            text = $form.find( "textarea" ).val()                                
+                            data = { "model": model, "review_text": text, "action": up_down }
+                            $.ajax({
+                                url: '/model-feedback',  data: JSON.stringify(data),  
+                                contentType:"application/json; charset=utf-8", 
+                                type : 'POST', async: "false"});
+                        }                  
+                        $('.js-rating-pt').thumbs({
+                            onLike: function (value) {                                
+                                post_model_feedback("pt", "like")
+                            },
+                            onDislike: function(value) {
+                                post_model_feedback("pt", "dislike")
+                            }
+                        });
+                        $('.js-rating-fa').thumbs({
+                            onLike: function (value) {
+                                post_model_feedback("fa", "like")
+                            },
+                            onDislike: function(value) {
+                                post_model_feedback("fa", "dislike")
+                            }
+                        });
                     </script>                                                             
-                </div>
+                </div>                
                 <div class='footer'>
-                    <p><br><br><br><br><br><br><a href="https://github.com/nikhilno1/nlp_projects">Code on GitHub</a>
-                    <br><i>Powered by Hugging Face's awesome pytorch-transformers library</i></p>                    
+                    <a href="https://github.com/nikhilno1/nlp_projects">Code on GitHub</a>  | For feedback/comments 
+                    <a href="https://twitter.com/intent/tweet?screen_name=nikhil_no_1&ref_src=twsrc%5Etfw" class="twitter-mention-button" data-show-count="false">Tweet to @nikhil_no_1</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 </div>
+                <div class='counter' align=center><a href='https://www.counter12.com'><img src='https://www.counter12.com/img-1d82dxxxC78B1Awb-26.gif' border='0' alt='counter12'></a><script type='text/javascript' src='https://www.counter12.com/ad.js?id=1d82dxxxC78B1Awb'></script></div>
             </div>
-        </div>
-        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        </div>        
         <script src="../static/component-spinners.js"></script>
     </body>
 </html>

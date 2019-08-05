@@ -2,8 +2,14 @@ runtime: custom
 env: flex
 resources:
     cpu: 2
-    memory_gb: 2.3
+    memory_gb: 4.0
     disk_size_gb: 20     
 readiness_check:
-    app_start_timeout_sec: 300
-
+    app_start_timeout_sec: 900
+env_variables:
+  CLOUD_SQL_CONNECTION_NAME: xxxxxx
+  DB_USER: xxxxx
+  DB_PASS: xxxxx
+  DB_NAME: xxxxx
+beta_settings:
+  cloud_sql_instances: xxxxx
